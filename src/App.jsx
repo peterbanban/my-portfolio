@@ -9,13 +9,18 @@ function App() {
   const [flowerCount, setFlowerCount] = useState(0)
   const [viewCount, setViewCount] = useState(0)
 
-  // 页面加载时获取统计数据并增加访问量
+  // 页面加载时先增加访问量，然后获取最新统计数据
   useEffect(() => {
-    fetchStats()
-    incrementView()
+    const initStats = async () => {
+      // 先增加访问量
+      await incrementView()
+      // 然后获取最新的统计数据（包括刚刚增加的访问量和服务器的献花数）
+      await fetchStats()
+    }
+    initStats()
   }, [])
 
-  // 获取统计数据
+  // 获取统计数据（完全以服务器为准）
   const fetchStats = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/stats`)
@@ -26,11 +31,9 @@ function App() {
       }
     } catch (error) {
       console.error('获取统计数据失败:', error)
-      // 如果API失败，使用本地存储作为后备
-      const localViews = localStorage.getItem('viewCount') || 0
-      const localFlowers = localStorage.getItem('flowerCount') || 0
-      setViewCount(parseInt(localViews))
-      setFlowerCount(parseInt(localFlowers))
+      // API失败时显示0，不使用本地存储
+      setViewCount(0)
+      setFlowerCount(0)
     }
   }
 
@@ -47,14 +50,10 @@ function App() {
       }
     } catch (error) {
       console.error('增加访问量失败:', error)
-      // 本地后备
-      const localCount = parseInt(localStorage.getItem('viewCount') || 0) + 1
-      localStorage.setItem('viewCount', localCount)
-      setViewCount(localCount)
     }
   }
 
-  // 增加献花次数
+  // 增加献花次数（完全以服务器返回值为准）
   const incrementFlower = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/flower`, {
@@ -63,14 +62,13 @@ function App() {
       })
       const result = await response.json()
       if (result.success) {
+        // 使用服务器返回的献花数，确保同步
         setFlowerCount(result.data.flowerCount)
+        console.log(`献花成功！当前献花数: ${result.data.flowerCount}`)
       }
     } catch (error) {
       console.error('增加献花次数失败:', error)
-      // 本地后备
-      const localCount = parseInt(localStorage.getItem('flowerCount') || 0) + 1
-      localStorage.setItem('flowerCount', localCount)
-      setFlowerCount(localCount)
+      alert('献花失败，请检查网络连接')
     }
   }
 
