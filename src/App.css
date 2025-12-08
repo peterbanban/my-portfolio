@@ -306,6 +306,85 @@ body {
   }
 }
 
+/* Flower Button */
+.flower-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flower-button:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.6);
+}
+
+.flower-button:active {
+  transform: scale(0.95) rotate(-15deg);
+}
+
+/* Flowers Container */
+.flowers-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* Flower Animation */
+.flower {
+  position: absolute;
+  top: -50px;
+  animation: fall linear forwards, sway ease-in-out infinite, rotate linear infinite;
+  animation-duration: inherit;
+  pointer-events: none;
+  user-select: none;
+}
+
+@keyframes fall {
+  to {
+    top: 100vh;
+    opacity: 0;
+  }
+}
+
+@keyframes sway {
+  0%, 100% {
+    transform: translateX(0) rotate(var(--rotation));
+  }
+  25% {
+    transform: translateX(30px) rotate(calc(var(--rotation) + 20deg));
+  }
+  75% {
+    transform: translateX(-30px) rotate(calc(var(--rotation) - 20deg));
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .nav {
@@ -336,5 +415,13 @@ body {
 
   .btn {
     width: 200px;
+  }
+
+  .flower-button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    bottom: 20px;
+    right: 20px;
   }
 }

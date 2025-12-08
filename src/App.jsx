@@ -1,6 +1,35 @@
+import { useState } from 'react'
 import './App.css'
 
 function App() {
+  const [flowers, setFlowers] = useState([])
+
+  const createFlower = () => {
+    const newFlower = {
+      id: Date.now() + Math.random(),
+      left: Math.random() * 100,
+      animationDuration: 3 + Math.random() * 2,
+      size: 20 + Math.random() * 20,
+      rotation: Math.random() * 360,
+      type: ['🌸', '🌺', '🌼', '🌻', '🌷'][Math.floor(Math.random() * 5)]
+    }
+
+    setFlowers(prev => [...prev, newFlower])
+
+    // 5秒后移除花瓣
+    setTimeout(() => {
+      setFlowers(prev => prev.filter(f => f.id !== newFlower.id))
+    }, 5000)
+  }
+
+  const handleFlowerClick = () => {
+    // 每次点击创建5-8片花瓣
+    const count = 5 + Math.floor(Math.random() * 4)
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => createFlower(), i * 100)
+    }
+  }
+
   return (
     <div className="portfolio">
       {/* Header Section */}
@@ -151,6 +180,29 @@ function App() {
       <footer className="footer">
         <p>&copy; 2025 我的作品集. All rights reserved.</p>
       </footer>
+
+      {/* Flower Button */}
+      <button className="flower-button" onClick={handleFlowerClick} title="献花">
+        💐
+      </button>
+
+      {/* Falling Flowers */}
+      <div className="flowers-container">
+        {flowers.map(flower => (
+          <div
+            key={flower.id}
+            className="flower"
+            style={{
+              left: `${flower.left}%`,
+              fontSize: `${flower.size}px`,
+              animationDuration: `${flower.animationDuration}s`,
+              '--rotation': `${flower.rotation}deg`
+            }}
+          >
+            {flower.type}
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
