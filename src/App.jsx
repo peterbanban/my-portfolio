@@ -1,9 +1,78 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+
+// API基础URL - 部署到阿里云后需要修改为你的服务器地址
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000'
 
 function App() {
   const [flowers, setFlowers] = useState([])
   const [flowerCount, setFlowerCount] = useState(0)
+  const [viewCount, setViewCount] = useState(0)
+
+  // 页面加载时获取统计数据并增加访问量
+  useEffect(() => {
+    fetchStats()
+    incrementView()
+  }, [])
+
+  // 获取统计数据
+  const fetchStats = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/stats`)
+      const result = await response.json()
+      if (result.success) {
+        setViewCount(result.data.viewCount)
+        setFlowerCount(result.data.flowerCount)
+      }
+    } catch (error) {
+      console.error('获取统计数据失败:', error)
+      // 如果API失败，使用本地存储作为后备
+      const localViews = localStorage.getItem('viewCount') || 0
+      const localFlowers = localStorage.getItem('flowerCount') || 0
+      setViewCount(parseInt(localViews))
+      setFlowerCount(parseInt(localFlowers))
+    }
+  }
+
+  // 增加访问量
+  const incrementView = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/view`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const result = await response.json()
+      if (result.success) {
+        setViewCount(result.data.viewCount)
+      }
+    } catch (error) {
+      console.error('增加访问量失败:', error)
+      // 本地后备
+      const localCount = parseInt(localStorage.getItem('viewCount') || 0) + 1
+      localStorage.setItem('viewCount', localCount)
+      setViewCount(localCount)
+    }
+  }
+
+  // 增加献花次数
+  const incrementFlower = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/flower`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const result = await response.json()
+      if (result.success) {
+        setFlowerCount(result.data.flowerCount)
+      }
+    } catch (error) {
+      console.error('增加献花次数失败:', error)
+      // 本地后备
+      const localCount = parseInt(localStorage.getItem('flowerCount') || 0) + 1
+      localStorage.setItem('flowerCount', localCount)
+      setFlowerCount(localCount)
+    }
+  }
 
   const createFlower = () => {
     const newFlower = {
@@ -24,8 +93,8 @@ function App() {
   }
 
   const handleFlowerClick = () => {
-    // 增加献花次数
-    setFlowerCount(prev => prev + 1)
+    // 调用API增加献花次数
+    incrementFlower()
 
     // 每次点击创建5-8片花瓣
     const count = 5 + Math.floor(Math.random() * 4)
@@ -196,7 +265,20 @@ function App() {
 
       {/* Footer */}
       <footer className="footer">
-        <p>&copy; 2025 我的作品集. All rights reserved.</p>
+        <div className="footer-content">
+          <p>&copy; 2025 我的作品集. All rights reserved.</p>
+          <div className="footer-stats">
+            <span className="stat-item">
+              <span className="stat-icon">👁️</span>
+              <span className="stat-text">访问量: <strong>{viewCount}</strong></span>
+            </span>
+            <span className="stat-divider">|</span>
+            <span className="stat-item">
+              <span className="stat-icon">💐</span>
+              <span className="stat-text">献花: <strong>{flowerCount}</strong></span>
+            </span>
+          </div>
+        </div>
       </footer>
 
       {/* Falling Flowers */}
