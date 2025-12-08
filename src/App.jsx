@@ -3,6 +3,7 @@ import './App.css'
 
 function App() {
   const [flowers, setFlowers] = useState([])
+  const [flowerCount, setFlowerCount] = useState(0)
 
   const createFlower = () => {
     const newFlower = {
@@ -23,6 +24,9 @@ function App() {
   }
 
   const handleFlowerClick = () => {
+    // 增加献花次数
+    setFlowerCount(prev => prev + 1)
+
     // 每次点击创建5-8片花瓣
     const count = 5 + Math.floor(Math.random() * 4)
     for (let i = 0; i < count; i++) {
@@ -176,15 +180,24 @@ function App() {
         </div>
       </section>
 
+      {/* Flower Section */}
+      <section className="flower-section">
+        <div className="flower-container-center">
+          <button className="flower-button-center" onClick={handleFlowerClick}>
+            <span className="flower-icon">💐</span>
+            <span className="flower-text">献花</span>
+          </button>
+          <div className="flower-count">
+            <span className="count-number">{flowerCount}</span>
+            <span className="count-text">人已献花</span>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="footer">
         <p>&copy; 2025 我的作品集. All rights reserved.</p>
       </footer>
-
-      {/* Flower Button */}
-      <button className="flower-button" onClick={handleFlowerClick} title="献花">
-        💐
-      </button>
 
       {/* Falling Flowers */}
       <div className="flowers-container">
