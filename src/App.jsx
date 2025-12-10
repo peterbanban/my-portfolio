@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// API基础URL - 部署到阿里云后需要修改为你的服务器地址
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000'
+// API基础URL - 阿里云服务器
+const API_BASE_URL = 'http://47.116.14.78:3000'
 
 function App() {
   const [flowers, setFlowers] = useState([])
